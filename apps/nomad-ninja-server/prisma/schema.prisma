@@ -1,0 +1,104 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Accommodation {
+  costPerNight     Float?
+  createdAt        DateTime                    @default(now())
+  id               String                      @id @default(cuid())
+  itineraries      Itinerary[]
+  name             String?
+  noiseLevels      Int?
+  powerOutlets     Boolean?
+  typeField        EnumAccommodationTypeField?
+  updatedAt        DateTime                    @updatedAt
+  wifiAvailability Boolean?
+}
+
+model Destination {
+  airQuality      Int?
+  city            String?
+  costOfLiving    Float?
+  country         String?
+  createdAt       DateTime                     @default(now())
+  id              String                       @id @default(cuid())
+  itineraries     Itinerary[]
+  name            String?
+  safetyRating    Int?
+  scenicViews     EnumDestinationScenicViews[]
+  updatedAt       DateTime                     @updatedAt
+  wifiReliability Int?
+}
+
+model Itinerary {
+  accommodation   Accommodation? @relation(fields: [accommodationId], references: [id])
+  accommodationId String?
+  activities      String?
+  bookings        Booking[]
+  createdAt       DateTime       @default(now())
+  destination     Destination?   @relation(fields: [destinationId], references: [id])
+  destinationId   String?
+  endDate         DateTime?
+  id              String         @id @default(cuid())
+  startDate       DateTime?
+  updatedAt       DateTime       @updatedAt
+  user            User?          @relation(fields: [userId], references: [id])
+  userId          String?
+}
+
+model Preference {
+  budget         Float?
+  createdAt      DateTime                      @default(now())
+  experienceType EnumPreferenceExperienceType?
+  id             String                        @id @default(cuid())
+  updatedAt      DateTime                      @updatedAt
+  workspaceType  EnumPreferenceWorkspaceType?
+}
+
+model Booking {
+  bookingDate   DateTime?
+  bookingStatus EnumBookingBookingStatus?
+  createdAt     DateTime                  @default(now())
+  id            String                    @id @default(cuid())
+  itinerary     Itinerary?                @relation(fields: [itineraryId], references: [id])
+  itineraryId   String?
+  updatedAt     DateTime                  @updatedAt
+}
+
+model User {
+  createdAt   DateTime    @default(now())
+  email       String?     @unique
+  firstName   String?
+  id          String      @id @default(cuid())
+  itineraries Itinerary[]
+  lastName    String?
+  password    String
+  roles       Json
+  updatedAt   DateTime    @updatedAt
+  username    String      @unique
+}
+
+enum EnumAccommodationTypeField {
+  Option1
+}
+
+enum EnumDestinationScenicViews {
+  Option1
+}
+
+enum EnumPreferenceExperienceType {
+  Option1
+}
+
+enum EnumPreferenceWorkspaceType {
+  Option1
+}
+
+enum EnumBookingBookingStatus {
+  Option1
+}
